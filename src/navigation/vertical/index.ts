@@ -13,7 +13,7 @@ const Navigation = (): VerticalNavItemsType => {
           path: '/leave-type'
         },
         {
-          title: 'Request Leave',
+          title: 'Leave Request',
           icon: 'mdi:list-box-outline',
           path: '/request-leave'
         },
@@ -25,7 +25,7 @@ const Navigation = (): VerticalNavItemsType => {
       ]
     : [
         {
-          title: 'Request Leave',
+          title: 'Leave Request',
           icon: 'mdi:list-box-outline',
           path: '/request-leave'
         }

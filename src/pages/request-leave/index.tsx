@@ -115,7 +115,7 @@ const RequestLeave = () => {
             <TabPanel value='1'>
               <Card>
                 <CardHeader
-                  title='List of Requests Leave'
+                  title='List of Leave Requests'
                   action={
                     <Button
                       onClick={() => {

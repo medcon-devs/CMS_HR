@@ -15,6 +15,8 @@ import FormHelperText from '@mui/material/FormHelperText'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+import { useRouter } from 'next/router'
+
 
 // ** Icon Imports
 import Icon from 'src/@core/components/icon'
@@ -77,6 +79,8 @@ const LoginPage = () => {
 
   // ** Hooks
   const auth = useAuth()
+  const router = useRouter()
+
 
   const {
     control,
@@ -204,6 +208,14 @@ const LoginPage = () => {
                   label='Remember Me'
                   control={<Checkbox checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} />}
                 />
+                <Typography
+                  variant="body2"
+                  color="primary"
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => router.push('/forgot-password')}
+                >
+                  Forgot Password?
+                </Typography>
               </Box>
               <Button fullWidth size='large' type='submit' variant='contained' sx={{ mb: 7 }}>
                 Login
