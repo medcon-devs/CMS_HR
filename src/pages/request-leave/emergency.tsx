@@ -265,7 +265,8 @@ function Emergency() {
                               start_date={dates.start}
                               end_date={dates.end}
                               weekend={type?.weekend_reflectable ?? false}
-                              days={type?.days}
+                              
+                              // days={type?.days}
                               type={type}
                               setDate={handleOnChange}
                               emergency

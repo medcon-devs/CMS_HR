@@ -85,6 +85,7 @@ function NewRequest() {
       if (res && res.status_code == 200) {
         return res.data
       }
+      console.log("response",res)
     } catch (e) {}
   }
 
@@ -229,6 +230,7 @@ function NewRequest() {
     setDate(dates)
     getNumberOfRequestedDays()
   }
+console.log("typeeeee",type)
 
   return (
     <DatePickerWrapper>
@@ -286,7 +288,7 @@ function NewRequest() {
                           title={'Leave Type'}
                           subtitle={
                             type?.per != 'none'
-                              ? `Available Days: ${days} ${days > 1 ? 'days' : 'day'} per ${type?.per ?? ''}`
+                              ? `Available Days: ${days} ${days > 1 ? 'days' : 'day'}`
                               : ``
                           }
                           info={
@@ -298,7 +300,7 @@ function NewRequest() {
                           setOption={handleTypeChange}
                         />
                       </Grid>
-                      {type && type.id > 0 ? (
+                      {type && type.id > 0 && days !==0 ? (
                         <>
                           <Grid item xs={12} mt={6}>
                             <DatePickerWrapper>
@@ -306,7 +308,9 @@ function NewRequest() {
                                 start_date={dates.start}
                                 end_date={dates.end}
                                 weekend={type.weekend_reflectable}
-                                days={type?.days}
+                                
+                                // days={type?.days}
+                                availabe_days={days}
                                 type={type}
                                 setDate={handleOnChange}
                                 popperPlacement={popperPlacement}
@@ -328,7 +332,7 @@ function NewRequest() {
                     </CardContent>
                   </Card>
 
-                  {type && type.id > 0 ? (
+                  {type && type.id > 0 && days !==0 ? (
                     <>
                       {type?.address_required ? (
                         <Card sx={{ mt: 3 }}>
@@ -391,7 +395,7 @@ function NewRequest() {
                       ) : null}
                       {type?.contact_required || type?.address_required ? (
                         <Card sx={{ mt: 3 }}>
-                          <CardHeader title='Contact Information' subheader='' />
+                          <CardHeader title='Your Contact Information' subheader='' />
                           <CardContent>
                             {type?.contact_required ? (
                               <>
@@ -431,7 +435,7 @@ function NewRequest() {
 
                       {type.ken_required ? (
                         <Card sx={{ mt: 3 }}>
-                          <CardHeader title='Next of Kin' subheader='your closest living relative' />
+                          <CardHeader title='Details of Kin' subheader='your closest living relative' />
                           <CardContent>
                             <Grid item xs={12}>
                               <FormControl>
@@ -516,7 +520,8 @@ function NewRequest() {
                     </>
                   ) : null}
                 </Box>
-                <Grid display='flex' justifyContent='flex-end' container spacing={2} mt={6}>
+                {days !==0 ? (
+                  <Grid display='flex' justifyContent='flex-end' container spacing={2} mt={6}>
                   <Button
                     color='primary'
                     onClick={submit}
@@ -526,6 +531,7 @@ function NewRequest() {
                     Submit
                   </Button>
                 </Grid>
+                ): null}
               </CardContent>
             </Card>
           </Grid>

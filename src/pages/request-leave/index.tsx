@@ -5,7 +5,7 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import CustomizeTable from 'src/@core/components/table'
 import authConfig from 'src/configs/auth'
-import { Alert, Button, Fab, Snackbar, Tab } from '@mui/material'
+import { Alert, Button, Fab, Snackbar, Tab, Box } from '@mui/material'
 import { SyntheticEvent, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import { useAuth } from 'src/hooks/useAuth'
@@ -38,9 +38,9 @@ const archiveColumns = [
   { id: 'leave_time', label: 'Leave Time', align: 'center', type: 'text', colored: 'default' },
   { id: 'type', label: 'Leave Type', align: 'center', type: 'text', colored: 'default', maxWidth: 140, },
   { id: 'ask_for_ticket', label: 'Ticket', align: 'center', type: 'text' },
-  { id: 'numberOfDays', label: 'Requested days', align: 'center', type: 'text', }, 
+  { id: 'numberOfDays', label: 'Requested days', align: 'center', type: 'text', },
   { id: 'manager', label: 'Manager', key: 'value', message: 'message', align: 'center', type: 'object' },
-  { id: 'status', label: 'Status', key: 'value', message: 'message', align: 'center', type: 'object',  },
+  { id: 'status', label: 'Status', key: 'value', message: 'message', align: 'center', type: 'object', },
   { id: 'created_at', label: 'Submitted At', align: 'center', type: 'text', colored: 'default', }
 ]
 
@@ -116,20 +116,55 @@ const RequestLeave = () => {
               <Card>
                 <CardHeader
                   title='List of Leave Requests'
+                  titleTypographyProps={{
+                    sx: {
+                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                    }
+                  }}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'flex-start', sm: 'center' },
+                    gap: 2
+                  }}
                   action={
-                    <Button
-                      onClick={() => {
-                        router.push({
-                          pathname: 'request-leave/emergency',
-                          query: {}
-                        })
-                      }}
-                      variant='contained'
-                      color='error'
-                      size='small'
+                    <Box
+                      display="flex"
+                      flexDirection={{ xs: 'column', sm: 'row' }}
+                      gap={1}
+                      sx={{ width: '100%', justifyContent: { xs: 'flex-start', sm: 'flex-end' } }}
                     >
-                      Emergency Leave
-                    </Button>
+                      <Button
+                        onClick={() =>
+                          router.push({
+                            pathname: 'request-leave/new',
+                            query: {}
+                          })
+                        }
+                        variant='contained'
+                        color='primary'
+                        size='small'
+                        fullWidth={true} // Optional: make button full width on mobile
+                        sx={{ width: { xs: '100%', sm: 'auto' } }}
+                      >
+                        New Leave Request
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          router.push({
+                            pathname: 'request-leave/emergency',
+                            query: {}
+                          })
+                        }
+                        variant='contained'
+                        color='error'
+                        size='small'
+                        fullWidth={true}
+                        sx={{ width: { xs: '100%', sm: 'auto' } }}
+                      >
+                        Emergency Leave
+                      </Button>
+                    </Box>
                   }
                 />
                 <CardContent>
@@ -159,7 +194,7 @@ const RequestLeave = () => {
               <Card>
                 <CardHeader
                   title='Previous Leave Requests'
-               
+
                 />
                 <CardContent>
                   <CustomizeTable
@@ -170,7 +205,7 @@ const RequestLeave = () => {
                     url={authConfig.archiveRequest}
                     columns={archiveColumns}
                     route={'request-leave'}
-                   
+
                   />
                 </CardContent>
               </Card>

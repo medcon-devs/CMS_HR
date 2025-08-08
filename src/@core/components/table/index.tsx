@@ -110,7 +110,8 @@ function CustomizeTable({
     isLoading(true)
     try {
       const res = await get(url, {
-        page: page + 1
+        page: page + 1,
+        per_page: 100
       })
 
       if (res && res.status_code == 200) {

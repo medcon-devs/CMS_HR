@@ -112,16 +112,18 @@ const User = () => {
   const submit = async () => {
     isLoading(true)
     try {
-      let data = {
+      const data = {
         ...form_data,
         manager_id: null
       }
+      console.log("dataaaaa",data)
       if (form_data.manager_id) {
-        data = {
-          manager_id: form_data.manager_id.id
-        }
+        // data = {
+        //   manager_id: form_data.manager_id.id
+        // }
+        data.manager_id = form_data.manager_id.id
       }
-
+      console.log("dataaaaa22",data)
       const res = await post(authConfig.users, data)
       isLoading(false)
       if (res && res.status_code == 200) {

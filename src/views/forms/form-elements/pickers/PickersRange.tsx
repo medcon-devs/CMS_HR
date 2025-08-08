@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, forwardRef, useCallback, useEffect } from 'react'
+import { useState, forwardRef, useCallback } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -7,7 +7,8 @@ import TextField from '@mui/material/TextField'
 
 // ** Third Party Imports
 import format from 'date-fns/format'
-import { getDay } from 'date-fns'
+
+// import { getDay } from 'date-fns'
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
 
 // ** Types
@@ -23,138 +24,136 @@ interface PickerProps {
 const PickersRange = ({
   weekend,
   setDate,
-  start_date,
-  end_date,
+  
+  // start_date,
+  // end_date,
   popperPlacement,
   type,
-  emergency
+  emergency,
+  availabe_days
 }: {
   weekend: boolean
   setDate: (date: any) => void
   start_date?: string | null
   end_date?: string | null
   popperPlacement: ReactDatePickerProps['popperPlacement']
-  days?: number
   type: any
   emergency?: boolean
+  availabe_days?: number
 }) => {
-  // ** States
-  const [startDate, setStartDate] = useState<DateType>(
-    start_date ? new Date(start_date) : dayjs().add(type.before_days, 'day').toDate()
-  )
-  const [endDate, setEndDate] = useState<DateType>(
-    end_date
-      ? new Date(end_date)
-      : dayjs()
-          .add(type.before_days + 1, 'day')
-          .toDate()
-  )
+  // Initialize with null
+  const [startDate, setStartDate] = useState<DateType | null>(null)
+  const [endDate, setEndDate] = useState<DateType | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
   const handleOnChange = (dates: any) => {
-    const [start, end] = dates
-    setStartDate(start)
-    setEndDate(end)
-    setDate({
-      start: start,
-      end: end
-    })
-  }
+  const [start, end] = dates
 
-  useEffect(() => {
-    setStartDate(start_date ? new Date(start_date) : dayjs().add(type.before_days, 'day').toDate())
-  }, [start_date])
-
-  useEffect(() => {
-    setEndDate(
-      end_date
-        ? new Date(end_date)
-        : dayjs()
-            .add(type.before_days + 1, 'day')
-            .toDate()
-    )
-  }, [end_date])
-
-  type DaysOfTheWeek = 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday'
-
-  const exclude = ['Saturday', 'Sunday']
-  const DAYS_OF_THE_WEEK: DaysOfTheWeek[] = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday'
-  ]
-
-  const CustomInput = forwardRef((props: PickerProps, ref) => {
-    const startDate = format(props.start, 'MM/dd/yyyy')
-    const endDate = props.end !== null ? ` - ${format(props.end, 'MM/dd/yyyy')}` : null
-
-    const value = `${startDate}${endDate !== null ? endDate : ''}`
-
-    return <TextField fullWidth inputRef={ref} label={props.label || ''} {...props} value={value} />
-  })
-  const handleExcludedDates = useCallback(
-    (date: Date) => {
-      if (!exclude?.length) return true
-      const day = getDay(date)
-
-      return !exclude?.includes(DAYS_OF_THE_WEEK[day])
-    },
-    [exclude]
-  )
-
-  const addWeekdays = () => {
-    let resultDate = dayjs(startDate)
-    if (type.max_days > 0) {
-      let remainingDays = type.max_days - 1
-
-      while (remainingDays > 0) {
-        resultDate = resultDate.add(1, 'day')
-        if (!type.weekend_reflectable) {
-          if (resultDate.day() !== 0 && resultDate.day() !== 6) {
-            // Skip weekends (Sunday and Saturday)
-            remainingDays--
-          }
-        } else {
-          remainingDays--
-        }
+  if (start && end && availabe_days) {
+    let totalDays = 0
+    let current = dayjs(start)
+  
+    while (current.isBefore(end) || current.isSame(end, 'day')) {
+      const day = current.day()
+      const isWeekend = day === 0 || day === 6
+      if (weekend || !isWeekend) {
+        totalDays++
       }
+      current = current.add(1, 'day')
+    }
 
-      return resultDate.toDate()
-    } else {
+    if (totalDays > availabe_days) {
+      alert(`You can only select up to ${availabe_days} days`)
+
       return
     }
   }
 
+  setStartDate(start)
+  setEndDate(end)
+  setDate({ start, end })
+}
+
+
+  // Remove syncing with props unless needed explicitly
+  // If needed (like in edit mode), you can do a controlled update using a flag or context
+
+  const CustomInput = forwardRef((props: PickerProps, ref) => {
+    const startVal = props.start ? format(props.start, 'MM/dd/yyyy') : ''
+    const endVal = props.end ? ` - ${format(props.end, 'MM/dd/yyyy')}` : ''
+    const value = `${startVal}${endVal}`
+
+    return <TextField fullWidth inputRef={ref} label={props.label || ''} {...props} value={value} />
+  })
+
+  const handleExcludedDates = useCallback((date: Date) => {
+    const day = date.getDay()
+
+    return weekend || !(day === 0 || day === 6)
+  }, [weekend])
+
+  const addWeekdays = () => {
+  if (!startDate) return undefined
+
+  let resultDate = dayjs(startDate)
+  if (type.max_days > 0) {
+    let remainingDays = type.max_days - 1
+
+    while (remainingDays > 0) {
+      resultDate = resultDate.add(1, 'day')
+      if (!type.weekend_reflectable) {
+        if (resultDate.day() !== 0 && resultDate.day() !== 6) {
+          remainingDays--
+        }
+      } else {
+        remainingDays--
+      }
+    }
+
+    return resultDate.toDate()
+  }
+
+  return undefined
+}
+
+
   return (
-    <Box id={'demo-space-x'} sx={{}} className='demo-space-x'>
-      <div>
-        <DatePicker
-          selectsRange
-          endDate={endDate}
-          startDate={startDate}
-          selected={startDate}
-          minDate={dayjs().add(type.before_days, 'day').toDate()}
-          maxDate={emergency ? undefined : addWeekdays()} // Maximum date is 22 days from the selected date
-          dateFormat='yyyy/MM/dd'
-          filterDate={weekend ? undefined : handleExcludedDates}
-          onInputClick={() => setIsOpen(true)}
-          onClickOutside={() => setIsOpen(false)}
-          open={isOpen}
-          id='date-range-picker'
-          onChange={handleOnChange}
-          className='text-center date-picker-reports'
-          dropdownMode='select'
-          portalId='demo-space-x'
-          popperPlacement={popperPlacement}
-          customInput={<CustomInput label='Date' start={startDate as Date | number} end={endDate as Date | number} />}
-        />
-      </div>
+    <Box>
+      <DatePicker
+        selectsRange
+        startDate={startDate}
+        endDate={endDate}
+        selected={startDate}
+        onChange={handleOnChange}
+        minDate={dayjs().add(type.before_days, 'day').toDate()}
+        maxDate={
+          type.id === 2 || type.title?.toLowerCase() === 'sick leave'
+            ? new Date()
+            : type.id === 5
+            ? dayjs().add(14, 'day').toDate()
+            : emergency
+            ? undefined
+            : addWeekdays()
+        }
+        filterDate={handleExcludedDates}
+        open={isOpen}
+        onInputClick={() => setIsOpen(true)}
+        onClickOutside={() => setIsOpen(false)}
+        className='text-center date-picker-reports'
+        dropdownMode='select'
+        portalId='demo-space-x'
+        popperPlacement={popperPlacement}
+        customInput={
+          <CustomInput
+            label='Date'
+            start={startDate as Date | number}
+            end={endDate as Date | number}
+          />
+        }
+      />
     </Box>
   )
 }
+
 
 export default PickersRange
